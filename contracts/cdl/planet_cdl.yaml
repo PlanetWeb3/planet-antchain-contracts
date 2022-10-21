@@ -1,0 +1,109 @@
+# name of the contract
+contract_name: Planet
+
+# type of the contract, this value is synced with the one in project settings,
+# this is just a redundancy for contract type
+contract_type: MYCHAIN_CPPWASM
+
+# codec to serialize complex data structure when calling contract interfaces
+# current available values are: JSON
+codec: JSON
+
+# version of the contract
+version: 1
+
+# complex data structure definitions
+types:
+  # name of the struct, must be in UpperCamel format
+  HelloRequest:
+    # field definitions of the structs, format: {field-name}:{type}:{validation-rule}
+    # field name must be in lowerCamel format
+    - name:string
+  HelloResponse:
+    - greeting:string
+  Token:
+    - tokenId:uint64
+    - tokenURI:string
+    - amount:uint64
+
+# contract interface definitions
+interfaces:
+  # name of the contract interface, must be in UpperCamel format
+  # Hello:
+    # interface parameter definitions
+    # params:
+      # param definitions of the interface, format: {field-name}:{type}:{validation-rule}
+      # param name must be in lowerCamel format
+      # - request:HelloRequest
+    # returns:
+      # param definitions of the interface, format: {field-name}:{type}:{validation-rule}
+      # param name must be in lowerCamel format
+      # - response:HelloResponse
+  GetOwner:
+    returns:
+      - owner:string
+
+  MintNFT:
+    params:
+      - tokenURIs:[string]
+      - amounts:[uint64]
+  
+  GetNFT:
+    params:
+      - owner:string
+    returns:
+      - tokens:[Token]
+
+  
+
+# contract log definitions
+logs:
+  # name of the contract log, must be in UpperCamel format
+  GreetingLog:
+    # log fields definitions, only basic types supported
+    log_data:
+      # field definitions of the log, format: {field-name}:{type}
+      # field name must be in lowerCamel format
+      - name:string
+      - greeting:string
+
+# codegen settings
+code_gen:
+  # java bal generation settings
+  bal:
+    # name of the package to generate
+    package: com.contract.planet.bal
+  # java vo generation settings
+  plain_vo:
+    # name of the package to generate
+    package: com.contract.planet.vo
+
+
+# cdl supported data format
+#--------------------------------------------------------------------------------
+#  cdl          |   mychain_cpp_wasm                     |  java                |
+#--------------------------------------------------------------------------------
+#  int8         |   int8_t                               |  short               |
+#--------------------------------------------------------------------------------
+#  uint8        |   uint8_t                              |  char                |
+#--------------------------------------------------------------------------------
+#  int16        |   int16_t                              |  int                 |
+#--------------------------------------------------------------------------------
+#  uint16       |   uint16_t                             |  short               |
+#--------------------------------------------------------------------------------
+#  int32        |   int32_t                              |  long                |
+#--------------------------------------------------------------------------------
+#  uint32       |   unt32_t                              |  int                 |
+#--------------------------------------------------------------------------------
+#  int64        |   int64_t                              |  long long           |
+#--------------------------------------------------------------------------------
+#  uint64       |   uint64_t                             |  long                |
+#--------------------------------------------------------------------------------
+#  bool         |   bool                                 |  boolean             |
+#--------------------------------------------------------------------------------
+#  string       | std::string                            |  String              |
+#--------------------------------------------------------------------------------
+#  [string]     | std::vector<std::string>               |  List<String, String>|
+#--------------------------------------------------------------------------------
+#  map[string]  | std::map<std::string, std::string>     |  Map<String, String> |
+#--------------------------------------------------------------------------------

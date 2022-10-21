@@ -1,0 +1,7 @@
+conf/compile_flags.txt
+build
+test/ittest/target
+*.key
+project-settings.yaml
+*.sol
+.vscode

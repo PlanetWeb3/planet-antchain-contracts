@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.alipay.chainstack</groupId>
+    <artifactId>planet-contract-test</artifactId>
+    <version>1</version>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <chainstack.version>2.0.4-rc</chainstack.version>
+        <fastjson.version>1.2.69_sec12</fastjson.version>
+        <junit.version>4.12</junit.version>
+        <slf4j-nop.version>1.7.30</slf4j-nop.version>
+        <maven-compiler.version>3.5.1</maven-compiler.version>
+        <build-helper-plugin.version>3.0.0</build-helper-plugin.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-nop</artifactId>
+            <version>${slf4j-nop.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>${fastjson.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alipay.chainstack</groupId>
+            <artifactId>provider-baas-rest</artifactId>
+            <version>${chainstack.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alipay.chainstack</groupId>
+            <artifactId>jbcc-mychain</artifactId>
+            <version>${chainstack.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alipay.chainstack</groupId>
+            <artifactId>mychain-ittest</artifactId>
+            <version>${chainstack.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.alipay.chainstack</groupId>
+                <artifactId>cstack-maven-plugin</artifactId>
+                <version>${chainstack.version}</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>gen</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <module>test</module>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler.version}</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>${build-helper-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/planet-bal/src/main/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
