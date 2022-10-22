@@ -13,7 +13,6 @@
 #include "generated/base/planet_contract_base.hpp"
 #include "generated/model/planet_model.h"
 #include "shared/error_code.h"
-#include <cstdlib>
 
 using namespace planet;
 

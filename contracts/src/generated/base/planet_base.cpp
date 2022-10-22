@@ -44,7 +44,9 @@ public:
     INTERFACE void Init() {
         Require(storage_ == nullptr, CONTRACT_STATE_ROOT_ALREADY_INITIALIZED);
         planet::storage::InitRoot();
-
+        if (storage_->get_owner() == "") {
+            storage_->set_owner(Bin2Hex(GetSender().get_data()));
+        }
     }
 
         /**
