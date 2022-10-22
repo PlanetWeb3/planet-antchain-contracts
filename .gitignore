@@ -5,3 +5,4 @@ test/ittest/target
 project-settings.yaml
 *.sol
 .vscode
+web
