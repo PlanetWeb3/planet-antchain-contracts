@@ -12,7 +12,7 @@ table Storage {
   curItemId: uint64 = 0;
   addressToToken: [Tokens](map:"v2");
   addressToLastTime: [Time](map:"v2");
-  commodities: [Commodity](map:"v2");
+  commodities: [Commodity](map_iterable:"v2");
   sumWight: uint64 = 0;
   fee: uint64 = 1;
   K: uint64 = 5;

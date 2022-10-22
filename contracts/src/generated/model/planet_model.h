@@ -15,11 +15,12 @@
 #include "libs/commons_2.0.0/json_writer.h"
 #include "libs/commons_2.0.0/validator.h"
 
-#define SF_NAME           "name"
 #define SF_TOKEN_ID           "tokenId"
 #define SF_TOKEN_U_R_I           "tokenURI"
 #define SF_AMOUNT           "amount"
-#define SF_GREETING           "greeting"
+#define SF_ITEM_ID           "itemId"
+#define SF_OWNER           "owner"
+#define SF_PRICE           "price"
 
 using cstack::libs::commons::JsonReader;
 using cstack::libs::commons::JsonWriter;
@@ -27,30 +28,6 @@ using cstack::libs::commons::Validator;
 
 namespace planet {
 namespace model {
-
-struct HelloRequest {
-
-	std::string name;
-
-
-    // name 字段是否存在
-    bool name_exist = true;
-
-
-    void set_name(const std::string& _value) {
-        name = _value;
-        name_exist = true;
-    }
-
-    std::string get_name() const {
-        return name;
-    }
-
-    bool is_name_exist() const {
-        return name_exist;
-    }
-
-};
 
 struct Token {
 
@@ -112,36 +89,120 @@ struct Token {
 
 };
 
-struct HelloResponse {
+struct Commodity {
 
-	std::string greeting;
+	uint64_t item_id;
+
+	uint64_t token_id;
+
+	std::string token_u_r_i;
+
+	std::string owner;
+
+	uint64_t price;
+
+	uint64_t amount;
 
 
-    // greeting 字段是否存在
-    bool greeting_exist = true;
+    // item_id 字段是否存在
+    bool item_id_exist = true;
+
+    // token_id 字段是否存在
+    bool token_id_exist = true;
+
+    // token_u_r_i 字段是否存在
+    bool token_u_r_i_exist = true;
+
+    // owner 字段是否存在
+    bool owner_exist = true;
+
+    // price 字段是否存在
+    bool price_exist = true;
+
+    // amount 字段是否存在
+    bool amount_exist = true;
 
 
-    void set_greeting(const std::string& _value) {
-        greeting = _value;
-        greeting_exist = true;
+    void set_item_id(const uint64_t& _value) {
+        item_id = _value;
+        item_id_exist = true;
     }
 
-    std::string get_greeting() const {
-        return greeting;
+    uint64_t get_item_id() const {
+        return item_id;
     }
 
-    bool is_greeting_exist() const {
-        return greeting_exist;
+    bool is_item_id_exist() const {
+        return item_id_exist;
+    }
+
+    void set_token_id(const uint64_t& _value) {
+        token_id = _value;
+        token_id_exist = true;
+    }
+
+    uint64_t get_token_id() const {
+        return token_id;
+    }
+
+    bool is_token_id_exist() const {
+        return token_id_exist;
+    }
+
+    void set_token_u_r_i(const std::string& _value) {
+        token_u_r_i = _value;
+        token_u_r_i_exist = true;
+    }
+
+    std::string get_token_u_r_i() const {
+        return token_u_r_i;
+    }
+
+    bool is_token_u_r_i_exist() const {
+        return token_u_r_i_exist;
+    }
+
+    void set_owner(const std::string& _value) {
+        owner = _value;
+        owner_exist = true;
+    }
+
+    std::string get_owner() const {
+        return owner;
+    }
+
+    bool is_owner_exist() const {
+        return owner_exist;
+    }
+
+    void set_price(const uint64_t& _value) {
+        price = _value;
+        price_exist = true;
+    }
+
+    uint64_t get_price() const {
+        return price;
+    }
+
+    bool is_price_exist() const {
+        return price_exist;
+    }
+
+    void set_amount(const uint64_t& _value) {
+        amount = _value;
+        amount_exist = true;
+    }
+
+    uint64_t get_amount() const {
+        return amount;
+    }
+
+    bool is_amount_exist() const {
+        return amount_exist;
     }
 
 };
 
-
-HelloRequest BuildHelloRequest();
-void HelloRequestJsonDecode(const std::string& data, HelloRequest& helloRequest);
-void HelloRequestJsonDecode(const rapidjson::Value::Object& object, HelloRequest& helloRequest);
-void HelloRequestJsonEncode(const HelloRequest& helloRequest, std::string& data);
-void HelloRequestJsonEncode(const HelloRequest& helloRequest, rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator);
 
 Token BuildToken();
 void TokenJsonDecode(const std::string& data, Token& token);
@@ -149,61 +210,12 @@ void TokenJsonDecode(const rapidjson::Value::Object& object, Token& token);
 void TokenJsonEncode(const Token& token, std::string& data);
 void TokenJsonEncode(const Token& token, rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator);
 
-HelloResponse BuildHelloResponse();
-void HelloResponseJsonDecode(const std::string& data, HelloResponse& helloResponse);
-void HelloResponseJsonDecode(const rapidjson::Value::Object& object, HelloResponse& helloResponse);
-void HelloResponseJsonEncode(const HelloResponse& helloResponse, std::string& data);
-void HelloResponseJsonEncode(const HelloResponse& helloResponse, rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator);
+Commodity BuildCommodity();
+void CommodityJsonDecode(const std::string& data, Commodity& commodity);
+void CommodityJsonDecode(const rapidjson::Value::Object& object, Commodity& commodity);
+void CommodityJsonEncode(const Commodity& commodity, std::string& data);
+void CommodityJsonEncode(const Commodity& commodity, rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator);
 
-
-//// HelloRequest Model Method Definition
-
-HelloRequest BuildHelloRequest() {
-    HelloRequest hello_request_model;
-    hello_request_model.name_exist = false;
-    return hello_request_model;
-}
-
-void HelloRequestJsonDecode(const std::string& data, HelloRequest& helloRequest){
-
-    rapidjson::Value root;
-	JsonReader::ParseObject(data, root);
-
-	auto object = root.GetObject();
-
-    HelloRequestJsonDecode(object, helloRequest);
-}
-
-void HelloRequestJsonDecode(const rapidjson::Value::Object& object, HelloRequest& helloRequest){
-        Validator::RequiredFieldCheck(object, SF_NAME);
-	    JsonReader::GetString(object, SF_NAME, helloRequest.name);
-
-}
-
-void HelloRequestJsonEncode(const HelloRequest& helloRequest, std::string& data){
-
-    rapidjson::Value json(rapidjson::kObjectType);
-
-    static rapidjson::Document doc;
-	rapidjson::Document::AllocatorType& allocator = doc.GetAllocator();
-
-    HelloRequestJsonEncode(helloRequest, json, allocator);
-
-    JsonWriter::Writer(json, data);
-}
-
-void HelloRequestJsonEncode(const HelloRequest& helloRequest, rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator){
-
-
-    if (helloRequest.is_name_exist()) {
-        rapidjson::Value name_value;
-        JsonWriter::ToValue(helloRequest.name, allocator, name_value);
-        json.AddMember(SF_NAME, name_value, allocator);
-
-    }
-}
-
-//// HelloRequest Model Definition End
 
 //// Token Model Method Definition
 
@@ -276,54 +288,109 @@ void TokenJsonEncode(const Token& token, rapidjson::Value& json, rapidjson::Docu
 
 //// Token Model Definition End
 
-//// HelloResponse Model Method Definition
+//// Commodity Model Method Definition
 
-HelloResponse BuildHelloResponse() {
-    HelloResponse hello_response_model;
-    hello_response_model.greeting_exist = false;
-    return hello_response_model;
+Commodity BuildCommodity() {
+    Commodity commodity_model;
+    commodity_model.item_id_exist = false;
+    commodity_model.token_id_exist = false;
+    commodity_model.token_u_r_i_exist = false;
+    commodity_model.owner_exist = false;
+    commodity_model.price_exist = false;
+    commodity_model.amount_exist = false;
+    return commodity_model;
 }
 
-void HelloResponseJsonDecode(const std::string& data, HelloResponse& helloResponse){
+void CommodityJsonDecode(const std::string& data, Commodity& commodity){
 
     rapidjson::Value root;
 	JsonReader::ParseObject(data, root);
 
 	auto object = root.GetObject();
 
-    HelloResponseJsonDecode(object, helloResponse);
+    CommodityJsonDecode(object, commodity);
 }
 
-void HelloResponseJsonDecode(const rapidjson::Value::Object& object, HelloResponse& helloResponse){
-        Validator::RequiredFieldCheck(object, SF_GREETING);
-	    JsonReader::GetString(object, SF_GREETING, helloResponse.greeting);
+void CommodityJsonDecode(const rapidjson::Value::Object& object, Commodity& commodity){
+        Validator::RequiredFieldCheck(object, SF_ITEM_ID);
+	    JsonReader::GetUint64(object, SF_ITEM_ID, commodity.item_id);
+
+        Validator::RequiredFieldCheck(object, SF_TOKEN_ID);
+	    JsonReader::GetUint64(object, SF_TOKEN_ID, commodity.token_id);
+
+        Validator::RequiredFieldCheck(object, SF_TOKEN_U_R_I);
+	    JsonReader::GetString(object, SF_TOKEN_U_R_I, commodity.token_u_r_i);
+
+        Validator::RequiredFieldCheck(object, SF_OWNER);
+	    JsonReader::GetString(object, SF_OWNER, commodity.owner);
+
+        Validator::RequiredFieldCheck(object, SF_PRICE);
+	    JsonReader::GetUint64(object, SF_PRICE, commodity.price);
+
+        Validator::RequiredFieldCheck(object, SF_AMOUNT);
+	    JsonReader::GetUint64(object, SF_AMOUNT, commodity.amount);
 
 }
 
-void HelloResponseJsonEncode(const HelloResponse& helloResponse, std::string& data){
+void CommodityJsonEncode(const Commodity& commodity, std::string& data){
 
     rapidjson::Value json(rapidjson::kObjectType);
 
     static rapidjson::Document doc;
 	rapidjson::Document::AllocatorType& allocator = doc.GetAllocator();
 
-    HelloResponseJsonEncode(helloResponse, json, allocator);
+    CommodityJsonEncode(commodity, json, allocator);
 
     JsonWriter::Writer(json, data);
 }
 
-void HelloResponseJsonEncode(const HelloResponse& helloResponse, rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator){
+void CommodityJsonEncode(const Commodity& commodity, rapidjson::Value& json, rapidjson::Document::AllocatorType& allocator){
 
 
-    if (helloResponse.is_greeting_exist()) {
-        rapidjson::Value greeting_value;
-        JsonWriter::ToValue(helloResponse.greeting, allocator, greeting_value);
-        json.AddMember(SF_GREETING, greeting_value, allocator);
+    if (commodity.is_item_id_exist()) {
+        rapidjson::Value item_id_value;
+        JsonWriter::ToValue(commodity.item_id, item_id_value);
+        json.AddMember(SF_ITEM_ID, item_id_value, allocator);
+
+    }
+
+    if (commodity.is_token_id_exist()) {
+        rapidjson::Value token_id_value;
+        JsonWriter::ToValue(commodity.token_id, token_id_value);
+        json.AddMember(SF_TOKEN_ID, token_id_value, allocator);
+
+    }
+
+    if (commodity.is_token_u_r_i_exist()) {
+        rapidjson::Value token_u_r_i_value;
+        JsonWriter::ToValue(commodity.token_u_r_i, allocator, token_u_r_i_value);
+        json.AddMember(SF_TOKEN_U_R_I, token_u_r_i_value, allocator);
+
+    }
+
+    if (commodity.is_owner_exist()) {
+        rapidjson::Value owner_value;
+        JsonWriter::ToValue(commodity.owner, allocator, owner_value);
+        json.AddMember(SF_OWNER, owner_value, allocator);
+
+    }
+
+    if (commodity.is_price_exist()) {
+        rapidjson::Value price_value;
+        JsonWriter::ToValue(commodity.price, price_value);
+        json.AddMember(SF_PRICE, price_value, allocator);
+
+    }
+
+    if (commodity.is_amount_exist()) {
+        rapidjson::Value amount_value;
+        JsonWriter::ToValue(commodity.amount, amount_value);
+        json.AddMember(SF_AMOUNT, amount_value, allocator);
 
     }
 }
 
-//// HelloResponse Model Definition End
+//// Commodity Model Definition End
 
 
 } // namespace base

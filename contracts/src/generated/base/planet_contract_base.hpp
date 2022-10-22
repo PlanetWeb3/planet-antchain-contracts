@@ -57,6 +57,81 @@ public:
     virtual std::vector<model::Token> GetNFT(
                     const std::string& owner) = 0;
 
+    /**
+     * @external_call true
+     */
+    virtual void TransferNFT(
+                    const std::string& from,
+                    const std::string& to,
+                    const uint64_t& token_id,
+                    const uint64_t& amount) = 0;
+
+    /**
+     * @external_call true
+     */
+    virtual void AddItemToMarket(
+                    const uint64_t& token_id,
+                    const uint64_t& amount,
+                    const uint64_t& price) = 0;
+
+    /**
+     * @external_call true
+     */
+    virtual void BuyItemAndTransferOwnership(
+                    const uint64_t& item_id,
+                    const uint64_t& amount) = 0;
+
+    /**
+     * @external_call true
+     */
+    virtual void RedeemItems(
+                    const uint64_t& item_id,
+                    const uint64_t& amount) = 0;
+
+    /**
+     * @external_call true
+     */
+    virtual std::vector<model::Commodity> GetUnsoldItems() = 0;
+
+    /**
+     * @external_call true
+     */
+    virtual std::vector<model::Commodity> GetCommoditiesByAddress(
+                    const std::string& owner) = 0;
+
+    /**
+     * @external_call true
+     */
+    virtual std::vector<model::Token> GetRandomKItems() = 0;
+
+    /**
+     * @external_call true
+     */
+    virtual void ChangeFee(
+                    const uint64_t& fee) = 0;
+
+    /**
+     * @external_call true
+     */
+    virtual void ChangeK(
+                    const uint64_t& k) = 0;
+
+    /**
+     * @external_call true
+     */
+    virtual uint64_t GetContractBalance() = 0;
+
+    /**
+     * @external_call true
+     */
+    virtual void WithDraw(
+                    const uint64_t& amount) = 0;
+
+    /**
+     * @external_call true
+     */
+    virtual uint64_t LastGetTime() = 0;
+
 
     // 重写跨合约调用方法（因为目前的CallContract定义在Contract对象里，委托的合约对象调用不到）
     template <typename T, typename... Args>

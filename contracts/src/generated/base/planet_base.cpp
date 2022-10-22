@@ -44,10 +44,7 @@ public:
     INTERFACE void Init() {
         Require(storage_ == nullptr, CONTRACT_STATE_ROOT_ALREADY_INITIALIZED);
         planet::storage::InitRoot();
-        storage_ = storage::GetStorageM();
-        if (storage_->get_owner() == "") {
-            storage_->set_owner(Bin2Hex(GetSender().get_data()));
-        }
+
     }
 
         /**
@@ -123,6 +120,236 @@ public:
         return resp_data;
     }
 
+    /**
+     * @external_call true
+     */
+        INTERFACE void TransferNFT(
+            const std::string& from,
+        const std::string& to,
+        const uint64_t& token_id,
+        const uint64_t& amount) {
+
+        static rapidjson::Document doc;
+
+
+                planet_contract_base_->TransferNFT(
+                from,
+                to,
+                token_id,
+                amount);
+    
+    }
+
+    /**
+     * @external_call true
+     */
+        INTERFACE void AddItemToMarket(
+            const uint64_t& token_id,
+        const uint64_t& amount,
+        const uint64_t& price) {
+
+        static rapidjson::Document doc;
+
+
+                planet_contract_base_->AddItemToMarket(
+                token_id,
+                amount,
+                price);
+    
+    }
+
+    /**
+     * @external_call true
+     */
+        INTERFACE void BuyItemAndTransferOwnership(
+            const uint64_t& item_id,
+        const uint64_t& amount) {
+
+        static rapidjson::Document doc;
+
+
+                planet_contract_base_->BuyItemAndTransferOwnership(
+                item_id,
+                amount);
+    
+    }
+
+    /**
+     * @external_call true
+     */
+        INTERFACE void RedeemItems(
+            const uint64_t& item_id,
+        const uint64_t& amount) {
+
+        static rapidjson::Document doc;
+
+
+                planet_contract_base_->RedeemItems(
+                item_id,
+                amount);
+    
+    }
+
+    /**
+     * @external_call true
+     */
+        INTERFACE std::string GetUnsoldItems(){
+    
+        static rapidjson::Document doc;
+
+
+                std::vector<model::Commodity> commodities_ret =
+        planet_contract_base_->GetUnsoldItems();
+
+                    std::string resp_data;
+            rapidjson::Value commodities_struct(rapidjson::kArrayType);
+
+
+            rapidjson::Document::AllocatorType& response_allocator = doc.GetAllocator();
+
+            for(unsigned int i = 0; i < commodities_ret.size(); ++i){
+            rapidjson::Value item(rapidjson::kObjectType);
+
+                model::CommodityJsonEncode(commodities_ret[i], item, response_allocator);
+
+            commodities_struct.PushBack(item, response_allocator);
+            }
+            JsonWriter::Writer(commodities_struct, resp_data);
+
+        
+        return resp_data;
+    }
+
+    /**
+     * @external_call true
+     */
+        INTERFACE std::string GetCommoditiesByAddress(
+            const std::string& owner) {
+
+        static rapidjson::Document doc;
+
+
+                std::vector<model::Commodity> commodities_ret =
+        planet_contract_base_->GetCommoditiesByAddress(
+                owner);
+
+                    std::string resp_data;
+            rapidjson::Value commodities_struct(rapidjson::kArrayType);
+
+
+            rapidjson::Document::AllocatorType& response_allocator = doc.GetAllocator();
+
+            for(unsigned int i = 0; i < commodities_ret.size(); ++i){
+            rapidjson::Value item(rapidjson::kObjectType);
+
+                model::CommodityJsonEncode(commodities_ret[i], item, response_allocator);
+
+            commodities_struct.PushBack(item, response_allocator);
+            }
+            JsonWriter::Writer(commodities_struct, resp_data);
+
+        
+        return resp_data;
+    }
+
+    /**
+     * @external_call true
+     */
+        INTERFACE std::string GetRandomKItems(){
+    
+        static rapidjson::Document doc;
+
+
+                std::vector<model::Token> token_ret =
+        planet_contract_base_->GetRandomKItems();
+
+                    std::string resp_data;
+            rapidjson::Value token_struct(rapidjson::kArrayType);
+
+
+            rapidjson::Document::AllocatorType& response_allocator = doc.GetAllocator();
+
+            for(unsigned int i = 0; i < token_ret.size(); ++i){
+            rapidjson::Value item(rapidjson::kObjectType);
+
+                model::TokenJsonEncode(token_ret[i], item, response_allocator);
+
+            token_struct.PushBack(item, response_allocator);
+            }
+            JsonWriter::Writer(token_struct, resp_data);
+
+        
+        return resp_data;
+    }
+
+    /**
+     * @external_call true
+     */
+        INTERFACE void ChangeFee(
+            const uint64_t& fee) {
+
+        static rapidjson::Document doc;
+
+
+                planet_contract_base_->ChangeFee(
+                fee);
+    
+    }
+
+    /**
+     * @external_call true
+     */
+        INTERFACE void ChangeK(
+            const uint64_t& k) {
+
+        static rapidjson::Document doc;
+
+
+                planet_contract_base_->ChangeK(
+                k);
+    
+    }
+
+    /**
+     * @external_call true
+     */
+        INTERFACE uint64_t GetContractBalance(){
+    
+        static rapidjson::Document doc;
+
+
+                auto resp_data =  planet_contract_base_->GetContractBalance();
+    
+        return resp_data;
+    }
+
+    /**
+     * @external_call true
+     */
+        INTERFACE void WithDraw(
+            const uint64_t& amount) {
+
+        static rapidjson::Document doc;
+
+
+                planet_contract_base_->WithDraw(
+                amount);
+    
+    }
+
+    /**
+     * @external_call true
+     */
+        INTERFACE uint64_t LastGetTime(){
+    
+        static rapidjson::Document doc;
+
+
+                auto resp_data =  planet_contract_base_->LastGetTime();
+    
+        return resp_data;
+    }
+
 
 private:
         std::unique_ptr<PlanetContractBase> planet_contract_base_;
@@ -139,4 +366,16 @@ INTERFACE_EXPORT(PlanetContract, \
     (GetOwner) \
     (MintNFT) \
     (GetNFT) \
+    (TransferNFT) \
+    (AddItemToMarket) \
+    (BuyItemAndTransferOwnership) \
+    (RedeemItems) \
+    (GetUnsoldItems) \
+    (GetCommoditiesByAddress) \
+    (GetRandomKItems) \
+    (ChangeFee) \
+    (ChangeK) \
+    (GetContractBalance) \
+    (WithDraw) \
+    (LastGetTime) \
 )

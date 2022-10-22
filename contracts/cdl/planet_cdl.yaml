@@ -15,15 +15,16 @@ version: 1
 # complex data structure definitions
 types:
   # name of the struct, must be in UpperCamel format
-  HelloRequest:
-    # field definitions of the structs, format: {field-name}:{type}:{validation-rule}
-    # field name must be in lowerCamel format
-    - name:string
-  HelloResponse:
-    - greeting:string
   Token:
     - tokenId:uint64
     - tokenURI:string
+    - amount:uint64
+  Commodity:
+    - itemId:uint64
+    - tokenId:uint64
+    - tokenURI:string
+    - owner:string
+    - price:uint64
     - amount:uint64
 
 # contract interface definitions
@@ -54,7 +55,62 @@ interfaces:
     returns:
       - tokens:[Token]
 
+  TransferNFT:
+    params:
+      - from:string
+      - to:string
+      - tokenId:uint64
+      - amount:uint64  
+
+  AddItemToMarket:
+    params:
+      - tokenId:uint64
+      - amount:uint64
+      - price:uint64
   
+  BuyItemAndTransferOwnership:
+    params:
+      - itemId:uint64
+      - amount:uint64
+
+  RedeemItems:
+    params:
+      - itemId:uint64
+      - amount:uint64
+
+  GetUnsoldItems:
+    returns:
+      - commodities:[Commodity]
+
+  GetCommoditiesByAddress:
+    params:
+      - owner:string
+    returns:
+      - commodities:[Commodity]
+
+  GetRandomKItems:
+    returns:
+      - token:[Token]
+
+  ChangeFee:
+    params:
+      - fee:uint64
+  
+  ChangeK:
+    params:
+      - k:uint64
+  
+  GetContractBalance:
+    returns:
+      - balance:uint64
+  
+  WithDraw:
+    params:
+      - amount:uint64
+
+  LastGetTime:
+    returns:
+      - time:uint64
 
 # contract log definitions
 logs:

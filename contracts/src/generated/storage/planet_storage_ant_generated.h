@@ -62,7 +62,7 @@ struct StorageM : public MyTable<StorageT, Storage> {
 private: 
   std::weak_ptr<MyMap<planet::storage::TokensM> > addressToToken_;
   std::weak_ptr<MyMap<planet::storage::TimeM> > addressToLastTime_;
-  std::weak_ptr<MyMap<planet::storage::CommodityM> > commodities_;
+  std::weak_ptr<MyMapIterable<planet::storage::CommodityM> > commodities_;
   using MyTable<StorageT, Storage>::MyTable;
   friend class MyFactory<StorageM, StorageT>;
   friend class MyFactory<StorageM>;
@@ -116,11 +116,11 @@ public:
     }
     return rv;
   }
-  planet::storage::CommodityMMapPtr get_commodities() {
-    planet::storage::CommodityMMapPtr rv;
+  planet::storage::CommodityMMapIterablePtr get_commodities() {
+    planet::storage::CommodityMMapIterablePtr rv;
     rv = commodities_.lock();
     if (!rv) {
-      rv = MyFactory<MyMap<planet::storage::CommodityM> >::make_instance(mychain_lib_ptr_, 
+      rv = MyFactory<MyMapIterable<planet::storage::CommodityM> >::make_instance(mychain_lib_ptr_, 
           base_key_->get_table_field_key(FieldNodeType::MAP_V2, 5/*field_id*/, "commodities"/*field_name*/), get_self_ptr());
       commodities_ = rv;
     }
