@@ -52,9 +52,9 @@ public:
 
     std::vector<model::Token> GetNFT(const std::string& owner) {
         auto addressToToken = GetStorage()->get_addressToToken();
-        if (!(addressToToken->has_element(Bin2Hex(GetSender().get_data())))) 
+        if (!(addressToToken->has_element(owner)))
             return {};
-        auto tokens = addressToToken->get_element(Bin2Hex(GetSender().get_data()))->get_tokens();
+        auto tokens = addressToToken->get_element(owner)->get_tokens();
         std::vector<model::Token> res;
         for (auto it = tokens->get_map_key_iterator(); it.valid(); ++it) {
             std::string key = *it;
