@@ -48,8 +48,8 @@ public:
      * @external_call true
      */
     virtual void MintNFT(
-                    const std::vector<std::string>& token_u_r_is,
-                    const std::vector<uint64_t>& amounts) = 0;
+                    const std::string& token_u_r_i,
+                    const uint64_t& amount) = 0;
 
     /**
      * @external_call true

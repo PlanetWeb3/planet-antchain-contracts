@@ -26,33 +26,28 @@ public:
         return GetStorage()->get_owner();
     }
     
-    void MintNFT(const std::vector<std::string>& token_u_r_is, const std::vector<uint64_t>& amounts) {
+    void MintNFT(const std::string& token_u_r_i, const uint64_t& amount) {
         std::string sender = Bin2Hex(GetSender().get_data());
         std::string contract = Bin2Hex(GetSelf().get_data());
-        Require(token_u_r_is.size() == amounts.size(), "Length Mismatch");
+        
+        Require(amount >= 1, "Zero Amount");
         Require(sender == GetStorage()->get_owner(), "Only Owner");
         
-        size_t size = token_u_r_is.size();
-        uint64_t curWeight = 0;
         uint64_t curTokenId = GetStorage()->get_curTokenId();
         auto addressToToken = GetStorage()->get_addressToToken();
 
-        for (size_t i = 0; i < size; i++) {
-            Require(amounts[i] >= 1, "Zero Amount");
-            if (!(addressToToken->has_element(contract))) {
-                addressToToken->add_element(contract);
-            }
-            auto tokens = addressToToken->get_element(contract)->get_tokens();
-            auto token = tokens->add_element(std::to_string(curTokenId));
-            token->set_tokenId(curTokenId);
-            token->set_tokenURI(token_u_r_is[i]);
-            token->set_amount(amounts[i]);
-            curTokenId++;
-            curWeight += amounts[i];
+        if (!(addressToToken->has_element(contract))) {
+            addressToToken->add_element(contract);
         }
+        auto tokens = addressToToken->get_element(contract)->get_tokens();
+        auto token = tokens->add_element(std::to_string(curTokenId));
+        token->set_tokenId(curTokenId);
+        token->set_tokenURI(token_u_r_i);
+        token->set_amount(amount);
+        curTokenId++;
 
         GetStorage()->set_curTokenId(curTokenId);
-        GetStorage()->set_sumWight(GetStorage()->get_sumWight() + curWeight);
+        GetStorage()->set_sumWight(GetStorage()->get_sumWight() + amount);
     }
 
     std::vector<model::Token> GetNFT(const std::string& owner) {

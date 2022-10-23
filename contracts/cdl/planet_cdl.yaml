@@ -46,8 +46,8 @@ interfaces:
 
   MintNFT:
     params:
-      - tokenURIs:[string]
-      - amounts:[uint64]
+      - tokenURI:string
+      - amount:uint64
   
   GetNFT:
     params:

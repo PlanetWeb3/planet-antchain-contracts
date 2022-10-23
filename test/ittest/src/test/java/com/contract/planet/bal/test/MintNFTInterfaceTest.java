@@ -12,7 +12,7 @@ import com.contract.planet.bal.data.*;
 import com.contract.planet.bal.log.*;
 import com.contract.planet.bal.model.*;
 import com.contract.planet.bal.parser.*;
-import java.util.ArrayList;
+import java.math.BigInteger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -31,8 +31,8 @@ public class MintNFTInterfaceTest extends PlanetAutoConfigTestBase {
         // 2.2. 构造request
         MintNFTRequest mintNFTRequest = new MintNFTRequest();
         mintNFTRequest.getReqContext().setAccountName(testAccount.getName());
-        mintNFTRequest.setTokenURIs(new ArrayList<>());
-        mintNFTRequest.setAmounts(new ArrayList<>());
+        mintNFTRequest.setTokenURI("hello");
+        mintNFTRequest.setAmount(BigInteger.ONE);
         // set other params...
 
         // 3. 执行请求

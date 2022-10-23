@@ -67,27 +67,15 @@ public:
      * @external_call true
      */
         INTERFACE void MintNFT(
-            const std::string& token_u_r_is,
-        const std::string& amounts) {
+            const std::string& token_u_r_i,
+        const uint64_t& amount) {
 
         static rapidjson::Document doc;
 
-                std::vector<std::string> token_u_r_is_struct;
-        rapidjson::Value token_u_r_is_root;
-        JsonReader::ParseObject(token_u_r_is, token_u_r_is_root, true);
 
-        JsonReader::GetVector(token_u_r_is_root, token_u_r_is_struct);
-
-                        std::vector<uint64_t> amounts_struct;
-        rapidjson::Value amounts_root;
-        JsonReader::ParseObject(amounts, amounts_root, true);
-
-        JsonReader::GetVector(amounts_root, amounts_struct);
-
-        
                 planet_contract_base_->MintNFT(
-                token_u_r_is_struct,
-                amounts_struct);
+                token_u_r_i,
+                amount);
     
     }
 
