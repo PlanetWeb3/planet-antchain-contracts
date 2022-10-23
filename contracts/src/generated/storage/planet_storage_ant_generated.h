@@ -58,8 +58,17 @@ typedef std::shared_ptr<MyMap<TimeM> > TimeMMapPtr;
 typedef std::shared_ptr<MyMapIterable<TimeM> > TimeMMapIterablePtr;
 typedef MapKeyIterator<MyMapIterable<TimeM> > TimeMMapKeyIterator;
 
+struct TokenURLM;
+typedef flatbuffers::Offset<TokenURL> TokenURLMOffset;
+typedef std::shared_ptr<TokenURLM> TokenURLMPtr;
+typedef std::shared_ptr<MyVector<TokenURLM, TokenURLT> > TokenURLMVectorPtr;
+typedef std::shared_ptr<MyMap<TokenURLM> > TokenURLMMapPtr;
+typedef std::shared_ptr<MyMapIterable<TokenURLM> > TokenURLMMapIterablePtr;
+typedef MapKeyIterator<MyMapIterable<TokenURLM> > TokenURLMMapKeyIterator;
+
 struct StorageM : public MyTable<StorageT, Storage> {
 private: 
+  std::weak_ptr<MyMap<planet::storage::TokenURLM> > tokenIdToURI_;
   std::weak_ptr<MyMap<planet::storage::TokensM> > addressToToken_;
   std::weak_ptr<MyMap<planet::storage::TimeM> > addressToLastTime_;
   std::weak_ptr<MyMapIterable<planet::storage::CommodityM> > commodities_;
@@ -96,12 +105,22 @@ public:
     native_table_ptr_->curItemId = _curItemId;
     return true;
   }
+  planet::storage::TokenURLMMapPtr get_tokenIdToURI() {
+    planet::storage::TokenURLMMapPtr rv;
+    rv = tokenIdToURI_.lock();
+    if (!rv) {
+      rv = MyFactory<MyMap<planet::storage::TokenURLM> >::make_instance(mychain_lib_ptr_, 
+          base_key_->get_table_field_key(FieldNodeType::MAP_V2, 3/*field_id*/, "tokenIdToURI"/*field_name*/), get_self_ptr());
+      tokenIdToURI_ = rv;
+    }
+    return rv;
+  }
   planet::storage::TokensMMapPtr get_addressToToken() {
     planet::storage::TokensMMapPtr rv;
     rv = addressToToken_.lock();
     if (!rv) {
       rv = MyFactory<MyMap<planet::storage::TokensM> >::make_instance(mychain_lib_ptr_, 
-          base_key_->get_table_field_key(FieldNodeType::MAP_V2, 3/*field_id*/, "addressToToken"/*field_name*/), get_self_ptr());
+          base_key_->get_table_field_key(FieldNodeType::MAP_V2, 4/*field_id*/, "addressToToken"/*field_name*/), get_self_ptr());
       addressToToken_ = rv;
     }
     return rv;
@@ -111,7 +130,7 @@ public:
     rv = addressToLastTime_.lock();
     if (!rv) {
       rv = MyFactory<MyMap<planet::storage::TimeM> >::make_instance(mychain_lib_ptr_, 
-          base_key_->get_table_field_key(FieldNodeType::MAP_V2, 4/*field_id*/, "addressToLastTime"/*field_name*/), get_self_ptr());
+          base_key_->get_table_field_key(FieldNodeType::MAP_V2, 5/*field_id*/, "addressToLastTime"/*field_name*/), get_self_ptr());
       addressToLastTime_ = rv;
     }
     return rv;
@@ -121,7 +140,7 @@ public:
     rv = commodities_.lock();
     if (!rv) {
       rv = MyFactory<MyMapIterable<planet::storage::CommodityM> >::make_instance(mychain_lib_ptr_, 
-          base_key_->get_table_field_key(FieldNodeType::MAP_V2, 5/*field_id*/, "commodities"/*field_name*/), get_self_ptr());
+          base_key_->get_table_field_key(FieldNodeType::MAP_V2, 6/*field_id*/, "commodities"/*field_name*/), get_self_ptr());
       commodities_ = rv;
     }
     return rv;
@@ -287,6 +306,27 @@ public:
   bool set_lastTime(uint64_t _lastTime) {
     set_dirty(true);
     native_table_ptr_->lastTime = _lastTime;
+    return true;
+  }
+};
+
+struct TokenURLM : public MyTable<TokenURLT, TokenURL> {
+private: 
+  using MyTable<TokenURLT, TokenURL>::MyTable;
+  friend class MyFactory<TokenURLM, TokenURLT>;
+  friend class MyFactory<TokenURLM>;
+public: 
+  ~TokenURLM() {}
+  std::string get_url() {
+    return native_table_ptr_->url;
+  }
+  bool set_url(std::string _url) {
+    uint32_t size_limit = 0 ? 0 : kDefaultStringSizeLimit;
+    if( _url.length() > size_limit ) {
+        mychain_lib_ptr_->MyRevert("The string size is over the limit" + std::to_string(size_limit));
+    }
+    set_dirty(true);
+    native_table_ptr_->url = std::move(_url);
     return true;
   }
 };

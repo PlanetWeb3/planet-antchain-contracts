@@ -44,6 +44,9 @@ public:
         token->set_tokenId(curTokenId);
         token->set_tokenURI(token_u_r_i);
         token->set_amount(amount);
+
+        GetStorage()->get_tokenIdToURI()->add_element(std::to_string(curTokenId));
+        GetStorage()->get_tokenIdToURI()->get_element(std::to_string(curTokenId))->set_url(token_u_r_i);
         curTokenId++;
 
         GetStorage()->set_curTokenId(curTokenId);
@@ -183,7 +186,7 @@ public:
                 auto token = tokens->get_element(key);
                 uint64_t tokenAmount = token->get_amount();
                 if (randomNumber <= tokenAmount) {
-                    res.push_back(model::Token{token->get_tokenId(), token->get_tokenURI(), tokenAmount});
+                    res.push_back(model::Token{token->get_tokenId(), token->get_tokenURI(), 1});
                     TransferNFT(contract, owner, token->get_tokenId(), 1);
                     break;
                 } else {
@@ -253,10 +256,13 @@ private:
         }
         auto tokens = addressToToken->get_element(owner)->get_tokens();
         if (!(tokens->has_element(std::to_string(tokenId)))) {
-            tokens->add_element(std::to_string(tokenId));
+            auto token = tokens->add_element(std::to_string(tokenId));
+            token->set_tokenId(tokenId);
+            token->set_amount(0);
+            token->set_tokenURI(GetStorage()->get_tokenIdToURI()->get_element(std::to_string(tokenId))->get_url()); 
         }
-        auto token = tokens->get_element(std::to_string(tokenId));
-        token->set_amount(token->get_amount() + amount);
+        auto tokenFind = tokens->get_element(std::to_string(tokenId));
+        tokenFind->set_amount(tokenFind->get_amount() + amount);
     }
 
     void DecreaseSupply(uint64_t tokenAmount, uint64_t amount, uint64_t itemId) {

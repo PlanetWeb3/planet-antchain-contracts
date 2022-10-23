@@ -31,8 +31,8 @@ public class MintNFTInterfaceTest extends PlanetAutoConfigTestBase {
         // 2.2. 构造request
         MintNFTRequest mintNFTRequest = new MintNFTRequest();
         mintNFTRequest.getReqContext().setAccountName(testAccount.getName());
-        mintNFTRequest.setTokenURI("hello");
-        mintNFTRequest.setAmount(BigInteger.ONE);
+        mintNFTRequest.setTokenURI("");
+        mintNFTRequest.setAmount(BigInteger.ZERO);
         // set other params...
 
         // 3. 执行请求
@@ -54,13 +54,5 @@ public class MintNFTInterfaceTest extends PlanetAutoConfigTestBase {
         assertTrue(
                 mintNFTResponse.getRespContext().getErrorMsg(),
                 mintNFTResponse.getRespContext().isSuccess());
-        
-        GetNFTRequest getNFTRequest = new GetNFTRequest();
-        getNFTRequest.getReqContext().setAccountName(testAccount.getName());
-        getNFTRequest.setOwner("67eab5c21a58efb3d9fffe751170d417b90a320e70d739e22b43cbd44eb5b325");
-        // set other params...
-
-        // 3. 执行请求
-        GetNFTResponse getNFTResponse = planetBAO.getNFT(getNFTRequest);
     }
 }

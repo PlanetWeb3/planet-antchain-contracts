@@ -29,11 +29,16 @@ struct Time;
 struct TimeBuilder;
 struct TimeT;
 
+struct TokenURL;
+struct TokenURLBuilder;
+struct TokenURLT;
+
 struct StorageT : public flatbuffers::NativeTable {
   typedef Storage TableType;
   std::string owner;
   uint64_t curTokenId;
   uint64_t curItemId;
+  std::vector<std::unique_ptr<planet::storage::TokenURLT>> tokenIdToURI;
   std::vector<std::unique_ptr<planet::storage::TokensT>> addressToToken;
   std::vector<std::unique_ptr<planet::storage::TimeT>> addressToLastTime;
   std::vector<std::unique_ptr<planet::storage::CommodityT>> commodities;
@@ -56,12 +61,13 @@ struct Storage FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_OWNER = 4,
     VT_CURTOKENID = 6,
     VT_CURITEMID = 8,
-    VT_ADDRESSTOTOKEN = 10,
-    VT_ADDRESSTOLASTTIME = 12,
-    VT_COMMODITIES = 14,
-    VT_SUMWIGHT = 16,
-    VT_FEE = 18,
-    VT_K = 20
+    VT_TOKENIDTOURI = 10,
+    VT_ADDRESSTOTOKEN = 12,
+    VT_ADDRESSTOLASTTIME = 14,
+    VT_COMMODITIES = 16,
+    VT_SUMWIGHT = 18,
+    VT_FEE = 20,
+    VT_K = 22
   };
   const flatbuffers::String *owner() const {
     return GetPointer<const flatbuffers::String *>(VT_OWNER);
@@ -80,6 +86,12 @@ struct Storage FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   }
   bool mutate_curItemId(uint64_t _curItemId) {
     return SetField<uint64_t>(VT_CURITEMID, _curItemId, 0);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<planet::storage::TokenURL>> *tokenIdToURI() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<planet::storage::TokenURL>> *>(VT_TOKENIDTOURI);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<planet::storage::TokenURL>> *mutable_tokenIdToURI() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<planet::storage::TokenURL>> *>(VT_TOKENIDTOURI);
   }
   const flatbuffers::Vector<flatbuffers::Offset<planet::storage::Tokens>> *addressToToken() const {
     return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<planet::storage::Tokens>> *>(VT_ADDRESSTOTOKEN);
@@ -123,6 +135,9 @@ struct Storage FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            verifier.VerifyString(owner()) &&
            VerifyField<uint64_t>(verifier, VT_CURTOKENID) &&
            VerifyField<uint64_t>(verifier, VT_CURITEMID) &&
+           VerifyOffset(verifier, VT_TOKENIDTOURI) &&
+           verifier.VerifyVector(tokenIdToURI()) &&
+           verifier.VerifyVectorOfTables(tokenIdToURI()) &&
            VerifyOffset(verifier, VT_ADDRESSTOTOKEN) &&
            verifier.VerifyVector(addressToToken()) &&
            verifier.VerifyVectorOfTables(addressToToken()) &&
@@ -154,6 +169,9 @@ struct StorageBuilder {
   }
   void add_curItemId(uint64_t curItemId) {
     fbb_.AddElement<uint64_t>(Storage::VT_CURITEMID, curItemId, 0);
+  }
+  void add_tokenIdToURI(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<planet::storage::TokenURL>>> tokenIdToURI) {
+    fbb_.AddOffset(Storage::VT_TOKENIDTOURI, tokenIdToURI);
   }
   void add_addressToToken(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<planet::storage::Tokens>>> addressToToken) {
     fbb_.AddOffset(Storage::VT_ADDRESSTOTOKEN, addressToToken);
@@ -190,6 +208,7 @@ inline flatbuffers::Offset<Storage> CreateStorage(
     flatbuffers::Offset<flatbuffers::String> owner = 0,
     uint64_t curTokenId = 0,
     uint64_t curItemId = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<planet::storage::TokenURL>>> tokenIdToURI = 0,
     flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<planet::storage::Tokens>>> addressToToken = 0,
     flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<planet::storage::Time>>> addressToLastTime = 0,
     flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<planet::storage::Commodity>>> commodities = 0,
@@ -205,6 +224,7 @@ inline flatbuffers::Offset<Storage> CreateStorage(
   builder_.add_commodities(commodities);
   builder_.add_addressToLastTime(addressToLastTime);
   builder_.add_addressToToken(addressToToken);
+  builder_.add_tokenIdToURI(tokenIdToURI);
   builder_.add_owner(owner);
   return builder_.Finish();
 }
@@ -214,6 +234,7 @@ inline flatbuffers::Offset<Storage> CreateStorageDirect(
     const char *owner = nullptr,
     uint64_t curTokenId = 0,
     uint64_t curItemId = 0,
+    const std::vector<flatbuffers::Offset<planet::storage::TokenURL>> *tokenIdToURI = nullptr,
     const std::vector<flatbuffers::Offset<planet::storage::Tokens>> *addressToToken = nullptr,
     const std::vector<flatbuffers::Offset<planet::storage::Time>> *addressToLastTime = nullptr,
     const std::vector<flatbuffers::Offset<planet::storage::Commodity>> *commodities = nullptr,
@@ -221,6 +242,7 @@ inline flatbuffers::Offset<Storage> CreateStorageDirect(
     uint64_t fee = 1ULL,
     uint64_t K = 5ULL) {
   auto owner__ = owner ? _fbb.CreateString(owner) : 0;
+  auto tokenIdToURI__ = tokenIdToURI ? _fbb.CreateVector<flatbuffers::Offset<planet::storage::TokenURL>>(*tokenIdToURI) : 0;
   auto addressToToken__ = addressToToken ? _fbb.CreateVector<flatbuffers::Offset<planet::storage::Tokens>>(*addressToToken) : 0;
   auto addressToLastTime__ = addressToLastTime ? _fbb.CreateVector<flatbuffers::Offset<planet::storage::Time>>(*addressToLastTime) : 0;
   auto commodities__ = commodities ? _fbb.CreateVector<flatbuffers::Offset<planet::storage::Commodity>>(*commodities) : 0;
@@ -229,6 +251,7 @@ inline flatbuffers::Offset<Storage> CreateStorageDirect(
       owner__,
       curTokenId,
       curItemId,
+      tokenIdToURI__,
       addressToToken__,
       addressToLastTime__,
       commodities__,
@@ -623,6 +646,74 @@ inline flatbuffers::Offset<Time> CreateTime(
 
 flatbuffers::Offset<Time> CreateTime(flatbuffers::FlatBufferBuilder &_fbb, const TimeT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
 
+struct TokenURLT : public flatbuffers::NativeTable {
+  typedef TokenURL TableType;
+  std::string url;
+  TokenURLT() {
+  }
+};
+
+struct TokenURL FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef TokenURLT NativeTableType;
+  typedef TokenURLBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_URL = 4
+  };
+  const flatbuffers::String *url() const {
+    return GetPointer<const flatbuffers::String *>(VT_URL);
+  }
+  flatbuffers::String *mutable_url() {
+    return GetPointer<flatbuffers::String *>(VT_URL);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_URL) &&
+           verifier.VerifyString(url()) &&
+           verifier.EndTable();
+  }
+  TokenURLT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(TokenURLT *_o, const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static flatbuffers::Offset<TokenURL> Pack(flatbuffers::FlatBufferBuilder &_fbb, const TokenURLT* _o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
+};
+
+struct TokenURLBuilder {
+  typedef TokenURL Table;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_url(flatbuffers::Offset<flatbuffers::String> url) {
+    fbb_.AddOffset(TokenURL::VT_URL, url);
+  }
+  explicit TokenURLBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  TokenURLBuilder &operator=(const TokenURLBuilder &);
+  flatbuffers::Offset<TokenURL> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<TokenURL>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<TokenURL> CreateTokenURL(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> url = 0) {
+  TokenURLBuilder builder_(_fbb);
+  builder_.add_url(url);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<TokenURL> CreateTokenURLDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    const char *url = nullptr) {
+  auto url__ = url ? _fbb.CreateString(url) : 0;
+  return planet::storage::CreateTokenURL(
+      _fbb,
+      url__);
+}
+
+flatbuffers::Offset<TokenURL> CreateTokenURL(flatbuffers::FlatBufferBuilder &_fbb, const TokenURLT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
 inline StorageT *Storage::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
   std::unique_ptr<planet::storage::StorageT> _o = std::unique_ptr<planet::storage::StorageT>(new StorageT());
   UnPackTo(_o.get(), _resolver);
@@ -635,6 +726,7 @@ inline void Storage::UnPackTo(StorageT *_o, const flatbuffers::resolver_function
   { auto _e = owner(); if (_e) _o->owner = _e->str(); }
   { auto _e = curTokenId(); _o->curTokenId = _e; }
   { auto _e = curItemId(); _o->curItemId = _e; }
+  { auto _e = tokenIdToURI(); if (_e) { _o->tokenIdToURI.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->tokenIdToURI[_i] = std::unique_ptr<planet::storage::TokenURLT>(_e->Get(_i)->UnPack(_resolver)); } } }
   { auto _e = addressToToken(); if (_e) { _o->addressToToken.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->addressToToken[_i] = std::unique_ptr<planet::storage::TokensT>(_e->Get(_i)->UnPack(_resolver)); } } }
   { auto _e = addressToLastTime(); if (_e) { _o->addressToLastTime.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->addressToLastTime[_i] = std::unique_ptr<planet::storage::TimeT>(_e->Get(_i)->UnPack(_resolver)); } } }
   { auto _e = commodities(); if (_e) { _o->commodities.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->commodities[_i] = std::unique_ptr<planet::storage::CommodityT>(_e->Get(_i)->UnPack(_resolver)); } } }
@@ -654,6 +746,7 @@ inline flatbuffers::Offset<Storage> CreateStorage(flatbuffers::FlatBufferBuilder
   auto _owner = _o->owner.empty() ? 0 : _fbb.CreateString(_o->owner);
   auto _curTokenId = _o->curTokenId;
   auto _curItemId = _o->curItemId;
+  auto _tokenIdToURI = _o->tokenIdToURI.size() ? _fbb.CreateVector<flatbuffers::Offset<planet::storage::TokenURL>> (_o->tokenIdToURI.size(), [](size_t i, _VectorArgs *__va) { return CreateTokenURL(*__va->__fbb, __va->__o->tokenIdToURI[i].get(), __va->__rehasher); }, &_va ) : 0;
   auto _addressToToken = _o->addressToToken.size() ? _fbb.CreateVector<flatbuffers::Offset<planet::storage::Tokens>> (_o->addressToToken.size(), [](size_t i, _VectorArgs *__va) { return CreateTokens(*__va->__fbb, __va->__o->addressToToken[i].get(), __va->__rehasher); }, &_va ) : 0;
   auto _addressToLastTime = _o->addressToLastTime.size() ? _fbb.CreateVector<flatbuffers::Offset<planet::storage::Time>> (_o->addressToLastTime.size(), [](size_t i, _VectorArgs *__va) { return CreateTime(*__va->__fbb, __va->__o->addressToLastTime[i].get(), __va->__rehasher); }, &_va ) : 0;
   auto _commodities = _o->commodities.size() ? _fbb.CreateVector<flatbuffers::Offset<planet::storage::Commodity>> (_o->commodities.size(), [](size_t i, _VectorArgs *__va) { return CreateCommodity(*__va->__fbb, __va->__o->commodities[i].get(), __va->__rehasher); }, &_va ) : 0;
@@ -665,6 +758,7 @@ inline flatbuffers::Offset<Storage> CreateStorage(flatbuffers::FlatBufferBuilder
       _owner,
       _curTokenId,
       _curItemId,
+      _tokenIdToURI,
       _addressToToken,
       _addressToLastTime,
       _commodities,
@@ -796,6 +890,32 @@ inline flatbuffers::Offset<Time> CreateTime(flatbuffers::FlatBufferBuilder &_fbb
   return planet::storage::CreateTime(
       _fbb,
       _lastTime);
+}
+
+inline TokenURLT *TokenURL::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
+  std::unique_ptr<planet::storage::TokenURLT> _o = std::unique_ptr<planet::storage::TokenURLT>(new TokenURLT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void TokenURL::UnPackTo(TokenURLT *_o, const flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = url(); if (_e) _o->url = _e->str(); }
+}
+
+inline flatbuffers::Offset<TokenURL> TokenURL::Pack(flatbuffers::FlatBufferBuilder &_fbb, const TokenURLT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateTokenURL(_fbb, _o, _rehasher);
+}
+
+inline flatbuffers::Offset<TokenURL> CreateTokenURL(flatbuffers::FlatBufferBuilder &_fbb, const TokenURLT *_o, const flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const TokenURLT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _url = _o->url.empty() ? 0 : _fbb.CreateString(_o->url);
+  return planet::storage::CreateTokenURL(
+      _fbb,
+      _url);
 }
 
 inline const planet::storage::Storage *GetStorage(const void *buf) {
