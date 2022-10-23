@@ -132,6 +132,11 @@ public:
      */
     virtual uint64_t LastGetTime() = 0;
 
+    /**
+     * @external_call true
+     */
+    virtual std::string GetContractAddress() = 0;
+
 
     // 重写跨合约调用方法（因为目前的CallContract定义在Contract对象里，委托的合约对象调用不到）
     template <typename T, typename... Args>

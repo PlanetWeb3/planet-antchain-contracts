@@ -225,6 +225,10 @@ public:
         return GetStorage()->get_addressToLastTime()->get_element(sender)->set_lastTime(GetBlockTimeStamp());
     }
 
+    std::string GetContractAddress() {
+        return Bin2Hex(GetSelf().get_data());
+    }
+
 private:
     // add your local var definitions here...
     void LoseToken(std::string owner, uint64_t tokenId, uint64_t amount) {

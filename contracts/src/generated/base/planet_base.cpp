@@ -341,6 +341,19 @@ public:
         return resp_data;
     }
 
+    /**
+     * @external_call true
+     */
+        INTERFACE std::string GetContractAddress(){
+    
+        static rapidjson::Document doc;
+
+
+                auto resp_data =  planet_contract_base_->GetContractAddress();
+    
+        return resp_data;
+    }
+
 
 private:
         std::unique_ptr<PlanetContractBase> planet_contract_base_;
@@ -369,4 +382,5 @@ INTERFACE_EXPORT(PlanetContract, \
     (GetContractBalance) \
     (WithDraw) \
     (LastGetTime) \
+    (GetContractAddress) \
 )

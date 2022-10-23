@@ -112,6 +112,10 @@ interfaces:
     returns:
       - time:uint64
 
+  GetContractAddress:
+    returns:
+      - address:string
+
 # contract log definitions
 logs:
   # name of the contract log, must be in UpperCamel format

@@ -12,15 +12,14 @@ import com.contract.planet.bal.data.*;
 import com.contract.planet.bal.log.*;
 import com.contract.planet.bal.model.*;
 import com.contract.planet.bal.parser.*;
-import java.math.BigInteger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(MyChainJunitRunner.class)
-public class MintNFTInterfaceTest extends PlanetAutoConfigTestBase {
+public class GetContractAddressInterfaceTest extends PlanetAutoConfigTestBase {
 
     @Test
-    public void mintNFTTest() {
+    public void getContractAddressTest() {
 
         // 1. 构造请求账户
         Account testAccount = getTestBlockChain().getAdminAccount();
@@ -29,19 +28,18 @@ public class MintNFTInterfaceTest extends PlanetAutoConfigTestBase {
         // 2.1. 构造合约参数DO
 
         // 2.2. 构造request
-        MintNFTRequest mintNFTRequest = new MintNFTRequest();
-        mintNFTRequest.getReqContext().setAccountName(testAccount.getName());
-        mintNFTRequest.setTokenURI("");
-        mintNFTRequest.setAmount(BigInteger.ZERO);
+        GetContractAddressRequest getContractAddressRequest = new GetContractAddressRequest();
+        getContractAddressRequest.getReqContext().setAccountName(testAccount.getName());
         // set other params...
 
         // 3. 执行请求
-        MintNFTResponse mintNFTResponse = planetBAO.mintNFT(mintNFTRequest);
+        GetContractAddressResponse getContractAddressResponse =
+                planetBAO.getContractAddress(getContractAddressRequest);
 
         // 4. 收集请求执行的区块链交易信息
         // 4.1. 查看请求关联的交易、收据
-        ReceiptModel receipt = collectReceipt(mintNFTRequest);
-        TransactionModel transaction = collectTransaction(mintNFTRequest);
+        ReceiptModel receipt = collectReceipt(getContractAddressRequest);
+        TransactionModel transaction = collectTransaction(getContractAddressRequest);
 
         PlanetTransactionParser parser = new PlanetTransactionParser(receipt);
         // 4.2. 通过parser判断receipt是否有指定的log
@@ -52,7 +50,7 @@ public class MintNFTInterfaceTest extends PlanetAutoConfigTestBase {
 
         // 5. 检查请求是否成功
         assertTrue(
-                mintNFTResponse.getRespContext().getErrorMsg(),
-                mintNFTResponse.getRespContext().isSuccess());
+                getContractAddressResponse.getRespContext().getErrorMsg(),
+                getContractAddressResponse.getRespContext().isSuccess());
     }
 }
