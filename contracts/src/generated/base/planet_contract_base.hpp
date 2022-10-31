@@ -42,6 +42,12 @@ public:
     /**
      * @external_call true
      */
+    virtual uint64_t GetPlanetinum(
+                    const std::string& owner) = 0;
+
+    /**
+     * @external_call true
+     */
     virtual std::string GetOwner() = 0;
 
     /**

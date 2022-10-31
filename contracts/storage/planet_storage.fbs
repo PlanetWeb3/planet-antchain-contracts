@@ -10,6 +10,7 @@ table Storage {
   owner: string;
   curTokenId: uint64 = 0;
   curItemId: uint64 = 0;
+  addressToPLT: [PLT](map:"v2");
   tokenIdToURI: [TokenURL](map:"v2");
   addressToToken: [Tokens](map:"v2");
   addressToLastTime: [Time](map:"v2");
@@ -43,6 +44,10 @@ table Time {
 
 table TokenURL {
   url: string;
+}
+
+table PLT {
+  plt: uint64;
 }
 
 // Down below is some sample mybuffer schema definitions,

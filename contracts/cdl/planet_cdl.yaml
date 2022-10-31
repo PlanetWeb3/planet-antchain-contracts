@@ -40,6 +40,12 @@ interfaces:
       # param definitions of the interface, format: {field-name}:{type}:{validation-rule}
       # param name must be in lowerCamel format
       # - response:HelloResponse
+  GetPlanetinum:
+    params:
+      - owner:string
+    returns:
+      - plt:uint64
+
   GetOwner:
     returns:
       - owner:string

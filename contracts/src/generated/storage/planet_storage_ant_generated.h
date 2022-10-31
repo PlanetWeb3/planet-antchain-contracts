@@ -66,8 +66,17 @@ typedef std::shared_ptr<MyMap<TokenURLM> > TokenURLMMapPtr;
 typedef std::shared_ptr<MyMapIterable<TokenURLM> > TokenURLMMapIterablePtr;
 typedef MapKeyIterator<MyMapIterable<TokenURLM> > TokenURLMMapKeyIterator;
 
+struct PLTM;
+typedef flatbuffers::Offset<PLT> PLTMOffset;
+typedef std::shared_ptr<PLTM> PLTMPtr;
+typedef std::shared_ptr<MyVector<PLTM, PLTT> > PLTMVectorPtr;
+typedef std::shared_ptr<MyMap<PLTM> > PLTMMapPtr;
+typedef std::shared_ptr<MyMapIterable<PLTM> > PLTMMapIterablePtr;
+typedef MapKeyIterator<MyMapIterable<PLTM> > PLTMMapKeyIterator;
+
 struct StorageM : public MyTable<StorageT, Storage> {
 private: 
+  std::weak_ptr<MyMap<planet::storage::PLTM> > addressToPLT_;
   std::weak_ptr<MyMap<planet::storage::TokenURLM> > tokenIdToURI_;
   std::weak_ptr<MyMap<planet::storage::TokensM> > addressToToken_;
   std::weak_ptr<MyMap<planet::storage::TimeM> > addressToLastTime_;
@@ -105,12 +114,22 @@ public:
     native_table_ptr_->curItemId = _curItemId;
     return true;
   }
+  planet::storage::PLTMMapPtr get_addressToPLT() {
+    planet::storage::PLTMMapPtr rv;
+    rv = addressToPLT_.lock();
+    if (!rv) {
+      rv = MyFactory<MyMap<planet::storage::PLTM> >::make_instance(mychain_lib_ptr_, 
+          base_key_->get_table_field_key(FieldNodeType::MAP_V2, 3/*field_id*/, "addressToPLT"/*field_name*/), get_self_ptr());
+      addressToPLT_ = rv;
+    }
+    return rv;
+  }
   planet::storage::TokenURLMMapPtr get_tokenIdToURI() {
     planet::storage::TokenURLMMapPtr rv;
     rv = tokenIdToURI_.lock();
     if (!rv) {
       rv = MyFactory<MyMap<planet::storage::TokenURLM> >::make_instance(mychain_lib_ptr_, 
-          base_key_->get_table_field_key(FieldNodeType::MAP_V2, 3/*field_id*/, "tokenIdToURI"/*field_name*/), get_self_ptr());
+          base_key_->get_table_field_key(FieldNodeType::MAP_V2, 4/*field_id*/, "tokenIdToURI"/*field_name*/), get_self_ptr());
       tokenIdToURI_ = rv;
     }
     return rv;
@@ -120,7 +139,7 @@ public:
     rv = addressToToken_.lock();
     if (!rv) {
       rv = MyFactory<MyMap<planet::storage::TokensM> >::make_instance(mychain_lib_ptr_, 
-          base_key_->get_table_field_key(FieldNodeType::MAP_V2, 4/*field_id*/, "addressToToken"/*field_name*/), get_self_ptr());
+          base_key_->get_table_field_key(FieldNodeType::MAP_V2, 5/*field_id*/, "addressToToken"/*field_name*/), get_self_ptr());
       addressToToken_ = rv;
     }
     return rv;
@@ -130,7 +149,7 @@ public:
     rv = addressToLastTime_.lock();
     if (!rv) {
       rv = MyFactory<MyMap<planet::storage::TimeM> >::make_instance(mychain_lib_ptr_, 
-          base_key_->get_table_field_key(FieldNodeType::MAP_V2, 5/*field_id*/, "addressToLastTime"/*field_name*/), get_self_ptr());
+          base_key_->get_table_field_key(FieldNodeType::MAP_V2, 6/*field_id*/, "addressToLastTime"/*field_name*/), get_self_ptr());
       addressToLastTime_ = rv;
     }
     return rv;
@@ -140,7 +159,7 @@ public:
     rv = commodities_.lock();
     if (!rv) {
       rv = MyFactory<MyMapIterable<planet::storage::CommodityM> >::make_instance(mychain_lib_ptr_, 
-          base_key_->get_table_field_key(FieldNodeType::MAP_V2, 6/*field_id*/, "commodities"/*field_name*/), get_self_ptr());
+          base_key_->get_table_field_key(FieldNodeType::MAP_V2, 7/*field_id*/, "commodities"/*field_name*/), get_self_ptr());
       commodities_ = rv;
     }
     return rv;
@@ -327,6 +346,23 @@ public:
     }
     set_dirty(true);
     native_table_ptr_->url = std::move(_url);
+    return true;
+  }
+};
+
+struct PLTM : public MyTable<PLTT, PLT> {
+private: 
+  using MyTable<PLTT, PLT>::MyTable;
+  friend class MyFactory<PLTM, PLTT>;
+  friend class MyFactory<PLTM>;
+public: 
+  ~PLTM() {}
+  uint64_t get_plt() {
+    return native_table_ptr_->plt;
+  }
+  bool set_plt(uint64_t _plt) {
+    set_dirty(true);
+    native_table_ptr_->plt = _plt;
     return true;
   }
 };

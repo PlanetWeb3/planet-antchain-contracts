@@ -25,6 +25,17 @@ public:
     std::string GetOwner() {
         return GetStorage()->get_owner();
     }
+
+    uint64_t GetPlanetinum(const std::string& owner) {
+        auto addressToPLT = GetStorage()->get_addressToPLT();
+
+        if (!(addressToPLT->has_element(owner))) {
+            auto plt = addressToPLT->add_element(owner);
+            plt->set_plt(100);
+        }
+
+        return addressToPLT->get_element(owner)->get_plt();
+    }
     
     void MintNFT(const std::string& token_u_r_i, const uint64_t& amount) {
         std::string sender = Bin2Hex(GetSender().get_data());
@@ -109,12 +120,15 @@ public:
         uint64_t price = commodity->get_price();
         uint64_t tokenAmount = commodity->get_amount();
         std::string owner = commodity->get_owner();
+        uint64_t senderPlt = GetPlanetinum(sender);
+        uint64_t ownerPlt = GetPlanetinum(owner);
         Require(tokenAmount >= amount, "Exceed Supply");
-        Require(GetValue() == price * amount, "Incorrect Money");
+        Require(senderPlt >= price * amount, "Lack Money");
 
         DecreaseSupply(tokenAmount, amount, item_id);
         GetToken(sender, tokenId, amount);
-        TransferBalance(Identity{owner}, GetValue());
+        GetStorage()->get_addressToPLT()->get_element(owner)->set_plt(ownerPlt + price * amount);
+        GetStorage()->get_addressToPLT()->get_element(sender)->set_plt(senderPlt - price * amount);
     }
 
     void RedeemItems(const uint64_t& itemId, const uint64_t& amount) {
@@ -165,16 +179,11 @@ public:
         std::string owner = GetStorage()->get_owner();
         std::string contract = Bin2Hex(GetSelf().get_data());
 
-        Require(sender == owner || GetValue() >= GetStorage()->get_fee() ||
+        Require(sender == owner || GetPlanetinum(sender) >= GetStorage()->get_fee() ||
                 !(GetStorage()->get_addressToLastTime()->has_element(sender)) ||
                 GetBlockTimeStamp() - GetStorage()->get_addressToLastTime()->get_element(sender)->get_lastTime() >= 86400000, 
                 "No Owner No Money No Time"); // Not Secure
-        uint64_t num;
-        if (GetValue() != 0) {
-            num = GetValue() / GetStorage()->get_fee() * GetStorage()->get_K();
-        } else {
-            num = GetStorage()->get_K();
-        }
+        uint64_t num = GetStorage()->get_K();
         uint64_t sumWeight = GetStorage()->get_sumWight();
         Require(sumWeight >= num, "Insufficient Pool");
         std::vector<model::Token> res{};
@@ -197,6 +206,7 @@ public:
         if (!(GetStorage()->get_addressToLastTime()->has_element(sender)))
             GetStorage()->get_addressToLastTime()->add_element(sender);
         GetStorage()->get_addressToLastTime()->get_element(sender)->set_lastTime(GetBlockTimeStamp());
+        GetStorage()->get_addressToPLT()->get_element(sender)->set_plt(GetPlanetinum(sender) - GetStorage()->get_fee());
         return res;
     }
     

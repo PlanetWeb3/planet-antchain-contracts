@@ -53,6 +53,21 @@ public:
         /**
      * @external_call true
      */
+        INTERFACE uint64_t GetPlanetinum(
+            const std::string& owner) {
+
+        static rapidjson::Document doc;
+
+
+                auto resp_data =  planet_contract_base_->GetPlanetinum(
+                owner);
+    
+        return resp_data;
+    }
+
+    /**
+     * @external_call true
+     */
         INTERFACE std::string GetOwner(){
     
         static rapidjson::Document doc;
@@ -367,6 +382,7 @@ CONTRACT_VERSION(1);
 
 INTERFACE_EXPORT(PlanetContract, \
     (Init) \
+    (GetPlanetinum) \
     (GetOwner) \
     (MintNFT) \
     (GetNFT) \
